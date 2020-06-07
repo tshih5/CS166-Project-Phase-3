@@ -366,31 +366,46 @@ public class Ticketmaster{
 			return;
 		}else{
 			//no user with email found proceed to insert.
-			query = "INSERT INTO Users (email, lname, fname, phone, pwd) VALUES (\'" + email + "\', \'" + lname + "\', \'" + fname + "\', \'" + phone + "\', \'" + pwd+ "\')";
-			try { // read the string, parse it and break.
+			query = "INSERT INTO Users (email, lname, fname, phone, pwd) VALUES (\'" + email + "\', \'" + lname + "\', \'" + fname + "\', \'" + phone + "\', \'" + pwd + "\')";
+			try {
 				esql.executeUpdate(query);
 				System.out.println(fname + " " + lname + " has been successfully added. Have a nice day :)");
 			}catch (SQLException e) {
 				System.out.println("We did an oopsie on our end. Please try again later.");
 			}
-
-			return;
 		}
 	}
 	
 	public static void AddBooking(Ticketmaster esql){//2
-		String bid;
-		String status;
-		String bdatetime;
-    	String seats;
-    	String sid;
-    	String email;
+		String bid = "";
+		String status = "";
+		String bdatetime = "";
+    	String seats = "";
+    	String sid = "";
+    	String email = "";
+		String[] queries = new String[3];
+		String insert_query  = "";
+		int number_rows_returned = 0;
+		int errors = 0;
 
-		System.out.print("Please enter status: (Paid, Cancelled, Pending)");
+		/*
+		query = "SELECT * FROM Bookings";
+		try { // read the string, parse it and break.
+			bid = Integer.toString(1 + esql.executeQueryAndPrintResult(query));
+		}catch (SQLException e) {
+			System.out.println("We did an oopsie on our end. Please try again later.");
+		}
+		*/
+
+		System.out.print("Please enter the booking ID: ");
+		bid = ReadUserInput().trim();
+		System.out.println("bid is: " + bid);
+
+		System.out.print("Please enter status: (Paid, Cancelled, Pending): ");
 		status = ReadUserInput().trim();
 		System.out.println("Status is: " + status);
 
-		System.out.print("Please enter date/ and time in mm/dd/yy h:mm format: ");
+		System.out.print("Please enter date/ and time in mm/dd/yy hh:mm:ss AM/PM format: ");
 		bdatetime = ReadUserInput().trim();
 
 		System.out.print("Please enter number of seats booked: ");
@@ -403,12 +418,65 @@ public class Ticketmaster{
 
 		System.out.print("Please enter booker email: ");
 		email = ReadUserInput().trim();
-		System.out.println("Email is: " + pwd);
+		System.out.println("Email is: " + email);
+
+		
+		queries[0] = "SELECT * FROM Bookings WHERE bid = " + bid;
+		queries[1] = "SELECT * FROM Shows WHERE sid = " + sid;
+		queries[2] = "SELECT * FROM Users WHERE email = \'" + email + "\'";
+
+		for(int i = 0; i < 3; ++i){
+			try { //check if bid, sid, or email exists
+				number_rows_returned = esql.executeQueryAndPrintResult(queries[i]);
+			}catch (SQLException e) {
+				System.out.println("We did an oopsie on our end. Please try again later.");
+				return;
+			}
+
+			switch(i){
+				case 0:{
+					if(number_rows_returned > 0){
+						System.out.println("Error: Booking id " + bid + " already exists!");
+						errors++;
+					}
+					break;
+				}
+				case 1:	{
+					if(number_rows_returned == 0){
+						System.out.println("Error: Show with sid " + sid + " does not exist!");
+						errors++;
+					}
+					break;
+				}
+				case 2:{
+					if(number_rows_returned == 0){
+						System.out.println("Error: User with email " + email + " does not exist!");
+						errors++;
+					}
+					break;
+				}
+			}
+		}
+
+		if(errors > 0){
+			System.out.println("Please fix all errors and try again");
+			return;
+		}else{
+			insert_query = "INSERT INTO Bookings (bid, status, bdatetime, seats, sid, email) VALUES (\'" + bid + "\', \'" + status + "\', \'" + bdatetime + "\', \'" + seats + "\', \'" + sid + "\', \'" + email +"\')";
+			try {
+				esql.executeUpdate(insert_query);
+				System.out.println("Booking " + bid + " has been successfully added. Have a nice day :)");
+			}catch (SQLException e) {
+				System.out.println("We did an oopsie on our end. Please try again later.");
+			}
+		}
+
+		
 
 	}
 	
 	public static void AddMovieShowingToTheater(Ticketmaster esql){//3
-		
+
 	}
 	
 	public static void CancelPendingBookings(Ticketmaster esql){//4
