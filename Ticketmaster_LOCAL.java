@@ -322,6 +322,7 @@ public class Ticketmaster{
 		}//end try
 		return userInput;
 	}
+
 	public static void AddUser(Ticketmaster esql){//1
 		
 		String fname = "";
@@ -470,9 +471,6 @@ public class Ticketmaster{
 				System.out.println("We did an oopsie on our end. Please try again later.");
 			}
 		}
-
-		
-
 	}
 	
 	public static void AddMovieShowingToTheater(Ticketmaster esql){//3
