@@ -713,11 +713,50 @@ public class Ticketmaster{
     }
     
     public static void RemovePayment(Ticketmaster esql){//6
-        
+        String pid = "";
+        String bid = "";
+        List<List<String>> result = new ArrayList<List<String>>();
+
+        //get pid of payment to be cancelled
+        System.out.print("Please enter the pid of the payment to be cancelled: ");
+        pid = ReadUserInput().trim();
+        System.out.println("Payment ID is: " + pid + "\n");
+
+        //get bid of booking corresponding to payment
+        String booking_query = "SELECT bid FROM Payments WHERE pid = " + pid;
+        try{
+            result = esql.executeQueryAndReturnResult(booking_query);
+            bid = result.get(0).get(0);
+            System.out.println("Booking corresponding to pid " + pid + " found: " + bid);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        //update booking and delete payment
+        String update_booking = "UPDATE Bookings SET status = \'Cancelled\' WHERE bid = " + bid;
+        String delete_payment = "DELETE FROM Payments WHERE pid = " + pid;
+        try{
+            esql.executeUpdate(update_booking);
+            esql.executeUpdate(delete_payment);
+            //esql.executeQueryAndPrintResult("SELECT * FROM Bookings WHERE status = \'Cancelled\'");
+        }catch (SQLException e){
+            System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
+            return;
+        }
+        System.out.println("Successfully deleted payment " + pid + ". Have a nice day!");
     }
     
     public static void ClearCancelledBookings(Ticketmaster esql){//7
-        
+        String delete_cancelled_query = "DELETE FROM Bookings WHERE status = \'Cancelled\'";
+        try{
+            esql.executeUpdate(delete_cancelled_query);
+            esql.executeQueryAndPrintResult("SELECT * FROM Bookings WHERE Status = \'Cancelled\'");
+        }catch(SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+        System.out.println("Sucessfully cleared all cancelled bookings.")
     }
     
     public static void RemoveShowsOnDate(Ticketmaster esql){//8
