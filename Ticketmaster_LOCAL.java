@@ -474,7 +474,134 @@ public class Ticketmaster{
     }
     
     public static void AddMovieShowingToTheater(Ticketmaster esql){//3
+        //movie
+        String mvid = "";
+        String title = "";
+        String rdate = "";
+        String country = "";
+        String description = "";
+        String duration = "";
+        String lang = "";
+        String genre = "";
 
+        //show
+        String sid = "";
+        //String mvid = ""; 
+        String sdate = "";
+        String sttime = "";
+        String edtime = "";
+
+        //play
+        //String sid "";
+        String tid = ""; //theater id
+
+        String insert_query = "";
+        String insert_query2 = "";
+        String insert_query3 = "";
+        String query = "";
+        int number_rows_returned = 0;
+
+        
+        System.out.print("Please enter the theater ID: ");
+        tid = ReadUserInput().trim();
+        System.out.println("tid is: " + tid);
+
+        query = "SELECT * FROM Theaters WHERE tid = " + tid;
+
+        try { //check if theater exists
+            number_rows_returned = esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        if (number_rows_returned > 0){
+            System.out.println("Theater id " + tid + " exists.");
+        }
+        else { //(number_rows_returned == 0)
+            System.out.println("Error: Theater id " + tid + " does not exist.");
+            return;
+        }
+
+
+        //inputs for movie
+        System.out.print("Please enter the movie ID: ");
+        mvid = ReadUserInput().trim();
+        System.out.println("mvid is: " + mvid);
+
+        System.out.print("Please enter the movie title: ");
+        title = ReadUserInput().trim();
+        System.out.println("movie title is: " + title);
+
+        System.out.print("Please enter the release date in MM/DD/YYYY format: ");
+        rdate = ReadUserInput().trim();
+        System.out.println("rdate is: " + rdate);
+
+        System.out.print("Please enter the country: ");
+        country = ReadUserInput().trim();
+        System.out.println("country is: " + country);
+
+        System.out.print("Please enter the description: ");
+        description = ReadUserInput().trim();
+        System.out.println("description is: " + description);
+
+        System.out.print("Please enter the duration: ");
+        duration = ReadUserInput().trim();
+        System.out.println("duration is: " + duration);
+
+        System.out.print("Please enter the language code (2 letter abbreviations, i.e. English = en): ");
+        lang = ReadUserInput().trim();
+        System.out.println("language is: " + lang);
+
+        System.out.print("Please enter the genre: ");
+        genre = ReadUserInput().trim();
+        System.out.println("genre is: " + genre);
+
+
+        //insert new movie into movies table
+        insert_query = "INSERT INTO Movies (mvid, title, rdate, country, description, duration, lang, genre) VALUES (\'" + mvid + "\', \'" + title + "\', \'" + rdate + "\', \'" + country + "\', \'" + description + "\', \'" + duration +"\', \'" + lang +"\', \'" + genre +"\')";
+        try {
+            esql.executeUpdate(insert_query);
+            System.out.println("Movie " + mvid + " has been successfully added. Have a nice day :)");
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+        }
+
+
+        //show inputs
+        System.out.print("Please enter the show ID: ");
+        sid = ReadUserInput().trim();
+        System.out.println("sid is: " + sid);
+
+        System.out.print("Please enter the show date: ");
+        sdate = ReadUserInput().trim();
+        System.out.println("show date is: " + sdate);
+
+        System.out.print("Please enter the show start time (in HH:MM format): ");
+        sttime = ReadUserInput().trim();
+        System.out.println("start time is: " + sttime);
+
+        System.out.print("Please enter the show end time (in HH:MM format): ");
+        edtime = ReadUserInput().trim();
+        System.out.println("end time is: " + edtime);
+
+        //insert into shows
+        insert_query2 = "INSERT INTO Shows (sid, mvid, sdate, sttime, edtime) VALUES (\'" + sid + "\', \'" + mvid + "\', \'" + sdate + "\', \'" + sttime + "\', \'" + edtime + "\')";
+        try {
+            esql.executeUpdate(insert_query2);
+            System.out.println("Show " + sid + " has been successfully added. Have a nice day :)");
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+        }
+
+        //insert into plays
+        insert_query3 = "INSERT INTO Plays (sid, tid) VALUES (\'" + sid + "\', \'" + tid + "\')";
+        try {
+            esql.executeUpdate(insert_query3);
+            System.out.println("Play with Show " + sid + " and Theater " + tid + " has been successfully added.Have a nice day :)");
+        } catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+        }
     }
     
     public static void CancelPendingBookings(Ticketmaster esql){//4
