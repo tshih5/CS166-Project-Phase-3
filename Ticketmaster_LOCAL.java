@@ -648,15 +648,68 @@ public class Ticketmaster{
     
     public static void ChangeSeatsForBooking(Ticketmaster esql) throws Exception{//5
         String bid = "";
-        String sid = "";
-        
+        String ssid = "";
+        String new_ssid = "";
+        List<List<String>> result = new ArrayList<List<String>>();
+
         //get booking to be edited.
-        System.out.println("Please input booking ID to be changed.");
+        System.out.print("Please input booking ID to be changed: ");
+        bid = ReadUserInput().trim();
+        System.out.println("bid is: " + bid + "\n");
+
+        //output the seats that are associated with the bid
+
+        String seats_query = "SELECT ssid FROM ShowSeats WHERE bid = " + bid;
+        System.out.println("Seats available to be changed are: ");
+        try{
+            esql.executeQueryAndPrintResult(seats_query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
         //gets seat to be changed
+        System.out.print("\nWhich seat would you like to be changed?: ");
+        ssid = ReadUserInput().trim();
+        System.out.println("The seat to be changed is: " + ssid + "\n");
 
         //show available seats that are the same price
+        String show_available_query = "SELECT ssid FROM ShowSeats WHERE bid IS NULL" +
+                            " INTERSECT SELECT s1.ssid FROM ShowSeats s1 WHERE s1.price = (SELECT s2.price FROM ShowSeats s2 WHERE s2.ssid = " + ssid + ")" +
+                            " INTERSECT SELECT s1.ssid FROM ShowSeats s1, Plays p1 WHERE s1.sid = p1.sid AND p1.tid = (SELECT p2.tid FROM ShowSeats s2, Plays p2 WHERE s2.sid = p2.sid AND s2.ssid = " + ssid + ")";
+        try{
+            result = esql.executeQueryAndReturnResult(show_available_query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+        //print seats or error if no seats are available
+        if(result.size() == 0){
+            System.out.println("Sorry, there are no seats available to be changed to.");
+            return;
+        }else{
+            System.out.print("Here are the seats that are still available at the same price: ");
+            for(int i = 0; i < result.size(); ++i){
+                System.out.print(result.get(i).get(0) + " ");
+            }
+        }
+
+        System.out.print("\nWhich seat would you like to change Seat " + ssid + " to?: ");
+        new_ssid = ReadUserInput().trim();
+        System.out.println("New seat is: " + new_ssid + "\n");
 
         //update chosen seats and set old seat booking to null
+        String remove_old_booking = "UPDATE ShowSeats SET bid = NULL WHERE ssid = " + ssid;
+        String add_new_booking = "UPDATE ShowSeats SET bid = " + bid + " WHERE ssid = " + new_ssid;
+        try{
+            esql.executeUpdate(remove_old_booking);
+            esql.executeUpdate(add_new_booking);
+            System.out.println("Booking has been successfully updated! :)");
+        }catch (SQLException e){
+            System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
+            return;
+        }
+
     }
     
     public static void RemovePayment(Ticketmaster esql){//6
