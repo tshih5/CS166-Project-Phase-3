@@ -657,8 +657,7 @@ public class Ticketmaster{
         bid = ReadUserInput().trim();
         System.out.println("bid is: " + bid + "\n");
 
-        //output the seats that are associated with the bid
-
+        //output the seats that are associated with the booking ID
         String seats_query = "SELECT ssid FROM ShowSeats WHERE bid = " + bid;
         System.out.println("Seats available to be changed are: ");
         try{
@@ -668,7 +667,7 @@ public class Ticketmaster{
             return;
         }
 
-        //gets seat to be changed
+        //gets seat to be changed from
         System.out.print("\nWhich seat would you like to be changed?: ");
         ssid = ReadUserInput().trim();
         System.out.println("The seat to be changed is: " + ssid + "\n");
@@ -683,6 +682,7 @@ public class Ticketmaster{
             System.out.println("We did an oopsie on our end. Please try again later.");
             return;
         }
+
         //print seats or error if no seats are available
         if(result.size() == 0){
             System.out.println("Sorry, there are no seats available to be changed to.");
@@ -694,6 +694,7 @@ public class Ticketmaster{
             }
         }
 
+        //get seat to be changed to
         System.out.print("\nWhich seat would you like to change Seat " + ssid + " to?: ");
         new_ssid = ReadUserInput().trim();
         System.out.println("New seat is: " + new_ssid + "\n");
@@ -709,7 +710,6 @@ public class Ticketmaster{
             System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
             return;
         }
-
     }
     
     public static void RemovePayment(Ticketmaster esql){//6
