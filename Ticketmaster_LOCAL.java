@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -355,7 +356,7 @@ public class Ticketmaster{
 
         query = "SELECT * FROM Users WHERE email = \'" + email + "\'";
 
-        try { // read the string, parse it and break.
+        try { //check to see if input email matches any on record.
             number_rows_returned = esql.executeQueryAndPrintResult(query);
         }catch (SQLException e) {
             System.out.println("We did an oopsie on our end. Please try again later.");
@@ -366,7 +367,7 @@ public class Ticketmaster{
             System.out.println("A user with email " + email + " has already been registered. Please try again");
             return;
         }else{
-            //no user with email found proceed to insert.
+            //no user with same email found, proceed to insert.
             query = "INSERT INTO Users (email, lname, fname, phone, pwd) VALUES (\'" + email + "\', \'" + lname + "\', \'" + fname + "\', \'" + phone + "\', \'" + pwd + "\')";
             try {
                 esql.executeUpdate(query);
@@ -458,7 +459,7 @@ public class Ticketmaster{
                 }
             }
         }
-
+        //checks if any errors have occured.
         if(errors > 0){
             System.out.println("Please fix all errors and try again");
             return;
@@ -478,11 +479,57 @@ public class Ticketmaster{
     }
     
     public static void CancelPendingBookings(Ticketmaster esql){//4
-        
+        int bid = -1;
+        List<List<String>> result = new ArrayList<List<String>>(); 
+
+        String get_status_query = "Select bid FROM Bookings WHERE status = \'Pending\'";
+        //get list of bookings that have pending status
+        try{
+             result = esql.executeQueryAndReturnResult(get_status_query);
+             System.out.println(Arrays.deepToString(result.toArray()));
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        //then loop through the result and update those entries with the same bid
+        for(int i = 0; i < result.size(); ++i){
+            //parse bid string to int
+            bid = Integer.parseInt(result.get(i).get(0));
+            String update_query = "UPDATE Bookings SET status = \'Cancelled\' WHERE bid = " + bid;
+
+            try{
+                esql.executeUpdate(update_query);
+            }catch (SQLException e){
+                System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
+                return;
+            }
+        }
+        System.out.println("Successfully cancelled all pending payments.");
+
+        /*  PRINT OUT STATUS OF ALL BOOKINGS
+        get_status_query = "Select status FROM Bookings";
+        try{
+             result = esql.executeQueryAndReturnResult(get_status_query);
+             System.out.println(Arrays.deepToString(result.toArray()));
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+        */
     }
     
     public static void ChangeSeatsForBooking(Ticketmaster esql) throws Exception{//5
+        String bid = "";
+        String sid = "";
         
+        //get booking to be edited.
+        System.out.println("Please input booking ID to be changed.");
+        //gets seat to be changed
+
+        //show available seats that are the same price
+
+        //update chosen seats and set old seat booking to null
     }
     
     public static void RemovePayment(Ticketmaster esql){//6
