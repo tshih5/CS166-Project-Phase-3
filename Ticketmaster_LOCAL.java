@@ -784,8 +784,33 @@ public class Ticketmaster{
     }
 
     public static void ListMovieAndShowInfoAtCinemaInDateRange(Ticketmaster esql){//13
-        //
+        String date_range_low = "";
+        String date_range_hi = "";
+        String cid = "";
+        String mvid = "";
+
         
+
+        //get start and end date
+        System.out.print("Please enter a start date of the form mm/dd/yy");
+        date_range_low = ReadUserInput().trim();
+        System.out.println("Start date: " + date_range_low);
+
+        System.out.print("Please enter a end date of the form mm/dd/yy");
+        date_range_hi = ReadUserInput().trim();
+        System.out.println("End date: " + date_range_hi);
+
+        System.out.print("Please enter the requested cinema by ID");
+        sid = ReadUserInput().trim();
+        System.out.println("Cinema ID is: " + sid);
+
+        System.out.print("Please enter the requested movie by ID");
+        mvid = ReadUserInput().trim();
+        System.out.println("Movie ID is: " + mvid);
+
+        //Need shows, plays, cinema, theater, movies
+        String get_shows = "SELECT * FROM Plays p, Shows s, Cinemas c, Theaters t, Movies m " + 
+            "WHERE t.tid = c.cid = t.cid AND p.tid AND p.sid = s.sid AND s.mvid = m.mvid"
     }
 
     public static void ListBookingInfoForUser(Ticketmaster esql){//14
