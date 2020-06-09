@@ -668,7 +668,7 @@ public class Ticketmaster{
         System.out.println("Successfully cancelled all pending payments.");
 
         //  PRINT OUT STATUS OF ALL BOOKINGS
-        get_status_query = "Select status FROM Bookings";
+        get_status_query = "Select * FROM Bookings WHERE status = \'Cancelled\'";
         try{
             esql.executeQueryAndPrintResult(get_status_query);
         }catch (SQLException e){
