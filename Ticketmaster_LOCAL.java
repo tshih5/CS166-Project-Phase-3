@@ -844,29 +844,48 @@ public class Ticketmaster{
         String date_range_hi = "";
         String cid = "";
         String mvid = "";
-
+        List<List<String>> results = new ArrayList<List<String>>();
         
 
         //get start and end date
-        System.out.print("Please enter a start date of the form mm/dd/yy");
+        System.out.print("Please enter a start date of the form mm/dd/yy: ");
         date_range_low = ReadUserInput().trim();
         System.out.println("Start date: " + date_range_low);
 
-        System.out.print("Please enter a end date of the form mm/dd/yy");
+        System.out.print("Please enter a end date of the form mm/dd/yy: ");
         date_range_hi = ReadUserInput().trim();
         System.out.println("End date: " + date_range_hi);
 
-        System.out.print("Please enter the requested cinema by ID");
-        sid = ReadUserInput().trim();
-        System.out.println("Cinema ID is: " + sid);
+        System.out.print("Please enter the requested cinema by ID: ");
+        cid = ReadUserInput().trim();
+        System.out.println("Cinema ID is: " + cid);
 
-        System.out.print("Please enter the requested movie by ID");
+        System.out.print("Please enter the requested movie by ID: ");
         mvid = ReadUserInput().trim();
         System.out.println("Movie ID is: " + mvid);
 
         //Need shows, plays, cinema, theater, movies
-        String get_shows = "SELECT * FROM Plays p, Shows s, Cinemas c, Theaters t, Movies m " + 
-            "WHERE t.tid = c.cid = t.cid AND p.tid AND p.sid = s.sid AND s.mvid = m.mvid"
+        String get_shows = "SELECT m.title as Title, round((m.duration + 0.0)/3600, 2) as Duration, s.sdate as Showdate, s.sttime FROM Plays p, Shows s, Cinemas c, Theaters t, Movies m WHERE c.cid = t.cid AND t.tid = p.tid AND p.sid = s.sid AND s.mvid = m.mvid " + 
+            "AND m.mvid = " + mvid + " AND c.cid = " + cid + " AND s.sdate > \'" + date_range_low + "\' AND s.sdate < \'" + date_range_hi + "\'";
+        
+        try { //display result
+            results = esql.executeQueryAndReturnResult(get_shows);
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later. " + e);
+            return;
+        }
+
+        System.out.println("Displaying shows at Cinema " + cid + " with mvid " + mvid + " between " + date_range_low + " and " + date_range_hi);
+        System.out.println("+-----------------------------+----------+---------------+------------+");
+        System.out.printf("|%30s %10s %15s %12s", "TITLE            |", "DURATION|", "SHOWDATE|", "START TIME|");
+        System.out.println();
+        System.out.println("+-----------------------------+----------+---------------+------------+");
+        for(List<String> dat: results){
+            System.out.format("|%30s %10s %15s %12s",
+                dat.get(0) + " ", dat.get(1) + " ", dat.get(2) + " ", dat.get(3) + " |");
+            System.out.println();
+        }
+        System.out.println("+-----------------------------+----------+---------------+------------+");
     }
 
     public static void ListBookingInfoForUser(Ticketmaster esql){//14
