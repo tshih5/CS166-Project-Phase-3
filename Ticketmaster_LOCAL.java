@@ -399,19 +399,11 @@ public class Ticketmaster{
         String seats = "";
         String sid = "";
         String email = "";
+        String[] ssid = new String[10];
         String[] queries = new String[3];
         String insert_query  = "";
         int number_rows_returned = 0;
         int errors = 0;
-
-        /*
-        query = "SELECT * FROM Bookings";
-        try { // read the string, parse it and break.
-            bid = Integer.toString(1 + esql.executeQueryAndPrintResult(query));
-        }catch (SQLException e) {
-            System.out.println("We did an oopsie on our end. Please try again later.");
-        }
-        */
 
         System.out.print("Please enter the booking ID: ");
         bid = ReadUserInput().trim();
@@ -421,7 +413,7 @@ public class Ticketmaster{
         status = ReadUserInput().trim();
         System.out.println("Status is: " + status);
 
-        System.out.print("Please enter date/ and time in mm/dd/yy hh:mm:ss AM/PM format: ");
+        System.out.print("Please enter date and time in mm/dd/yy hh:mm:ss AM/PM format: ");
         bdatetime = ReadUserInput().trim();
 
         System.out.print("Please enter number of seats booked: ");
@@ -452,38 +444,65 @@ public class Ticketmaster{
             switch(i){
                 case 0:{
                     if(number_rows_returned > 0){
-                        System.out.println("Error: Booking id " + bid + " already exists!");
+                        System.out.println("\nError: Booking id " + bid + " already exists!\n");
                         errors++;
                     }
                     break;
                 }
                 case 1:	{
                     if(number_rows_returned == 0){
-                        System.out.println("Error: Show with sid " + sid + " does not exist!");
+                        System.out.println("\nError: Show with sid " + sid + " does not exist!\n");
                         errors++;
                     }
                     break;
                 }
                 case 2:{
                     if(number_rows_returned == 0){
-                        System.out.println("Error: User with email " + email + " does not exist!");
+                        System.out.println("\nError: User with email " + email + " does not exist!\n");
                         errors++;
                     }
                     break;
                 }
             }
         }
+
         //checks if any errors have occured.
         if(errors > 0){
             System.out.println("Please fix all errors and try again");
             return;
-        }else{
-            insert_query = "INSERT INTO Bookings (bid, status, bdatetime, seats, sid, email) VALUES (\'" + bid + "\', \'" + status + "\', \'" + bdatetime + "\', \'" + seats + "\', \'" + sid + "\', \'" + email +"\')";
+        }
+
+        //create empty booking
+        insert_query = "INSERT INTO Bookings (bid, status, bdatetime, seats, sid, email) VALUES (\'" + bid + "\', \'" + status + "\', \'" + bdatetime + "\', \'" + seats + "\', \'" + sid + "\', \'" + email +"\')";
+        try {
+            esql.executeUpdate(insert_query);
+            System.out.println("Booking " + bid + " has been successfully created.");
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        //display seats available for show
+        String display_seats = "SELECT ssid FROM ShowSeats WHERE bid IS NULL AND sid = " + sid;
+        try {
+            System.out.Println("Here are the available seats for sid " + sid);
+            esql.executeQueryAndPrintResult(display_seats);
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        //Prompt user for seat to be booked.
+        for(int i = 0; i < Integer.parseInt(seats); ++i){
+            System.out.print("Please enter seat to be booked: ");
+            ssid[i] = ReadUserInput().trim();
+            System.out.println("Adding seat " + ssid[i] + " to booking " + bid);
+            String update_showseat_booking = "UPDATE ShowSeats SET bid = " + bid + " WHERE ssid = " + ssid[i];
             try {
-                esql.executeUpdate(insert_query);
-                System.out.println("Booking " + bid + " has been successfully added. Have a nice day :)");
+                esql.executeUpdate(update_showseat_booking);
+                System.out.println("SUCCESS!");
             }catch (SQLException e) {
-                System.out.println("We did an oopsie on our end. Please try again later.");
+                System.out.println("We did an oopsie on our end. Please try again later. " + e);
             }
         }
     }
