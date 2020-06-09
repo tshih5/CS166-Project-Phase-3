@@ -765,7 +765,27 @@ public class Ticketmaster{
     
     public static void ListTheatersPlayingShow(Ticketmaster esql){//9
         //
-        
+        String query = "";
+        String cid = "";
+        String sid = "";
+
+        System.out.print("Please enter the cinema id: ");
+        cid = ReadUserInput().trim();
+        System.out.println("cid is: " + cid);
+
+        System.out.print("Please enter the show id: ");
+        sid = ReadUserInput().trim();
+        System.out.println("sid is: " + sid);
+
+
+        query = "SELECT t FROM Theaters t, Plays p WHERE p.sid = " + sid + " AND t.cid = " + cid + " AND p.tid = t.tid";
+        System.out.println("All Theaters in Cinema " + cid + " playing the show " + sid + ": ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
     
     public static void ListShowsStartingOnTimeAndDate(Ticketmaster esql){//10
