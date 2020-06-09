@@ -485,7 +485,7 @@ public class Ticketmaster{
         //display seats available for show
         String display_seats = "SELECT ssid FROM ShowSeats WHERE bid IS NULL AND sid = " + sid;
         try {
-            System.out.Println("Here are the available seats for sid " + sid);
+            System.out.println("Here are the available seats for sid " + sid);
             esql.executeQueryAndPrintResult(display_seats);
         }catch (SQLException e) {
             System.out.println("We did an oopsie on our end. Please try again later.");
