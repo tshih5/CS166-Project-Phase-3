@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -313,6 +314,18 @@ public class Ticketmaster{
         return input;
     }//end readChoice
 
+    private static String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 64) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+    }
+
     public static String ReadUserInput(){
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String userInput = "";
@@ -350,8 +363,9 @@ public class Ticketmaster{
         phone = ReadUserInput().trim();
         System.out.println("phone number is: " + phone);
 
-        System.out.print("Please enter user password: ");
-        pwd = ReadUserInput().trim();
+        //System.out.print("Please enter user password: ");
+        //pwd = ReadUserInput().trim();
+        pwd = getSaltString();
         System.out.println("Password is: " + pwd);
 
         query = "SELECT * FROM Users WHERE email = \'" + email + "\'";
@@ -634,16 +648,15 @@ public class Ticketmaster{
         }
         System.out.println("Successfully cancelled all pending payments.");
 
-        /*  PRINT OUT STATUS OF ALL BOOKINGS
+        //  PRINT OUT STATUS OF ALL BOOKINGS
         get_status_query = "Select status FROM Bookings";
         try{
-             result = esql.executeQueryAndReturnResult(get_status_query);
-             System.out.println(Arrays.deepToString(result.toArray()));
+            esql.executeQueryAndPrintResult(get_status_query);
         }catch (SQLException e){
             System.out.println("We did an oopsie on our end. Please try again later.");
             return;
         }
-        */
+        
     }
     
     public static void ChangeSeatsForBooking(Ticketmaster esql) throws Exception{//5
@@ -914,7 +927,7 @@ public class Ticketmaster{
         System.out.println();
         System.out.println("+-----------------------------+----------+---------------+------------+");
         for(List<String> dat: results){
-            System.out.format("|%30s %10s %15s %12s",
+            System.out.printf("|%30s %10s %15s %12s",
                 dat.get(0) + " ", dat.get(1) + " ", dat.get(2) + " ", dat.get(3) + " |");
             System.out.println();
         }
@@ -962,5 +975,4 @@ public class Ticketmaster{
             return;
         }
     }
-    
 }
