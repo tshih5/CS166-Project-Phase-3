@@ -765,22 +765,78 @@ public class Ticketmaster{
     
     public static void ListTheatersPlayingShow(Ticketmaster esql){//9
         //
-        
+        String query = "";
+        String cid = "";
+        String sid = "";
+
+        System.out.print("Please enter the cinema id: ");
+        cid = ReadUserInput().trim();
+        System.out.println("cid is: " + cid);
+
+        System.out.print("Please enter the show id: ");
+        sid = ReadUserInput().trim();
+        System.out.println("sid is: " + sid);
+
+
+        query = "SELECT t FROM Theaters t, Plays p WHERE p.sid = " + sid + " AND t.cid = " + cid + " AND p.tid = t.tid";
+        System.out.println("All Theaters in Cinema " + cid + " playing the show " + sid + ": ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
     
     public static void ListShowsStartingOnTimeAndDate(Ticketmaster esql){//10
         //
-        
+        String query = "";
+        String date = "";
+        String time = "";
+
+
+        System.out.print("Please enter the date in MM/DD/YYYY format (you can leave out the preceding 0's for month and day, for example: 1/1/2001 instead of 01/01/2001): ");
+        date = ReadUserInput().trim();
+        System.out.println("date is: " + date);
+
+        System.out.print("Please enter the time in HH:MM format (you can leave out the preceding 0 for hours, for example: 1:00 instead of 01:00): ");
+        time = ReadUserInput().trim();
+        System.out.println("time is: " + time);
+
+
+        query = "SELECT * FROM Shows WHERE sdate = '" + date + "' AND sttime = '" + time + "'";
+        System.out.println("All Shows that start on " + date + " at " + time + ": ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
 
     public static void ListMovieTitlesContainingLoveReleasedAfter2010(Ticketmaster esql){//11
         //
-        
+        String query = "SELECT title FROM Movies WHERE title ~* 'love' AND (SELECT EXTRACT(YEAR FROM rdate) > 2010)";
+        System.out.println("Movies with titles containing 'love' released after 2010: ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
 
     public static void ListUsersWithPendingBooking(Ticketmaster esql){//12
         //
+        String query = "SELECT u.fname, u.lname, u.email FROM Users u, Bookings b WHERE b.status = \'Pending\' AND b.email = u.email";
         
+        System.out.println("User(s) with pending bookings: ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
 
     public static void ListMovieAndShowInfoAtCinemaInDateRange(Ticketmaster esql){//13
