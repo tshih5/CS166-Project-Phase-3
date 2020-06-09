@@ -760,7 +760,40 @@ public class Ticketmaster{
     }
     
     public static void RemoveShowsOnDate(Ticketmaster esql){//8
-        
+        String query = "";
+        String delete_query = "";
+        String date = "";
+        String cid = "";
+
+        System.out.print("Please enter the date in MM/DD/YYYY format (you can leave out the preceding 0's for month and day, for example: 1/1/2001 instead of 01/01/2001): ");
+        date = ReadUserInput().trim();
+        System.out.println("date is: " + date);
+
+        System.out.print("Please enter the cinema id: ");
+        cid = ReadUserInput().trim();
+        System.out.println("cid is: " + cid);
+
+        //display what is about to be deleted
+        query = "SELECT * FROM Shows Where sdate = \'" + date + "\' AND sid IN (SELECT p.sid FROM Plays p, Theaters t WHERE p.tid = t.tid AND t.cid = " + cid + ")";
+        System.out.println("Delete all Shows on the date " + date + " in Cinema " + cid + ": ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        //delete
+        delete_query = "DELETE FROM Shows Where sdate = \'" + date + "\' AND sid IN (SELECT p.sid FROM Plays p, Theaters t WHERE p.tid = t.tid AND t.cid = " + cid + ")";
+        System.out.println("Deleting...");
+        try{
+            esql.executeUpdate(delete_query);
+            System.out.println("Deleted.");
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            //System.out.println(e);
+            return;
+        }
     }
     
     public static void ListTheatersPlayingShow(Ticketmaster esql){//9
