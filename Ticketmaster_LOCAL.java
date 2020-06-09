@@ -775,7 +775,14 @@ public class Ticketmaster{
 
     public static void ListMovieTitlesContainingLoveReleasedAfter2010(Ticketmaster esql){//11
         //
-        
+        String query = "SELECT title FROM Movies WHERE title ~* 'love' AND (SELECT EXTRACT(YEAR FROM rdate) > 2010)";
+        System.out.println("Movies with titles containing 'love' released after 2010: ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
 
     public static void ListUsersWithPendingBooking(Ticketmaster esql){//12
