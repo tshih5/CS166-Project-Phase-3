@@ -756,7 +756,7 @@ public class Ticketmaster{
             System.out.println("We did an oopsie on our end. Please try again later.");
             return;
         }
-        System.out.println("Sucessfully cleared all cancelled bookings.")
+        System.out.println("Sucessfully cleared all cancelled bookings.");
     }
     
     public static void RemoveShowsOnDate(Ticketmaster esql){//8
@@ -790,7 +790,44 @@ public class Ticketmaster{
 
     public static void ListBookingInfoForUser(Ticketmaster esql){//14
         //
+        String email = "";
+        String query = "";
+        int number_rows_returned = 0;
+        String list_query = "";
         
+
+        System.out.print("Please enter user email: ");
+        email = ReadUserInput().trim();
+        System.out.println("email is: " + email);
+
+        
+        query = "SELECT * FROM Bookings WHERE email = \'" + email + "\'";
+
+        try { //check if user exists
+            number_rows_returned = esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e) {
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
+
+        if (number_rows_returned > 0){
+            System.out.println("User with the email " + email + " exists.");
+        }
+        else { //(number_rows_returned == 0)
+            System.out.println("Error: User with the email " + email + " does not exist.");
+            return;
+        }
+
+
+
+        list_query = "SELECT m.title, s.sdate, s.sttime, t.tname, cs.sno FROM Movies m, Shows s, Bookings b, ShowSeats ss, Theaters t, CinemaSeats cs WHERE b.email = \'" + email + "\' AND s.sid = b.sid AND m.mvid = s.mvid AND b.bid = ss.bid AND cs.csid = ss.csid AND cs.tid = t.tid";
+        System.out.println(email + "\'s bookings information: ");
+        try{
+            esql.executeQueryAndPrintResult(list_query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
     
 }
