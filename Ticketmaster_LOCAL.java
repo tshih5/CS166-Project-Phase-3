@@ -770,7 +770,28 @@ public class Ticketmaster{
     
     public static void ListShowsStartingOnTimeAndDate(Ticketmaster esql){//10
         //
-        
+        String query = "";
+        String date = "";
+        String time = "";
+
+
+        System.out.print("Please enter the date in MM/DD/YYYY format (you can leave out the preceding 0's for month and day, for example: 1/1/2001 instead of 01/01/2001): ");
+        date = ReadUserInput().trim();
+        System.out.println("date is: " + date);
+
+        System.out.print("Please enter the time in HH:MM format (you can leave out the preceding 0 for hours, for example: 1:00 instead of 01:00): ");
+        time = ReadUserInput().trim();
+        System.out.println("time is: " + time);
+
+
+        query = "SELECT * FROM Shows WHERE sdate = '" + date + "' AND sttime = '" + time + "'";
+        System.out.println("All Shows that start on " + date + " at " + time + ": ");
+        try{
+            esql.executeQueryAndPrintResult(query);
+        }catch (SQLException e){
+            System.out.println("We did an oopsie on our end. Please try again later.");
+            return;
+        }
     }
 
     public static void ListMovieTitlesContainingLoveReleasedAfter2010(Ticketmaster esql){//11
