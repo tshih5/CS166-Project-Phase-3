@@ -653,19 +653,22 @@ public class Ticketmaster{
         }
 
         //then loop through the result and update those entries with the same bid
+        //also turn all showseats related to that bid to null to free them up
         for(int i = 0; i < result.size(); ++i){
             //parse bid string to int
             bid = Integer.parseInt(result.get(i).get(0));
             String update_query = "UPDATE Bookings SET status = \'Cancelled\' WHERE bid = " + bid;
+            String remove_showseats_bid = "UPDATE ShowSeats SET bid = NULL WHERE bid = " + bid;
 
             try{
                 esql.executeUpdate(update_query);
+                esql.executeUpdate(remove_showseats_bid);
             }catch (SQLException e){
                 System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
-                return;
+                return;s
             }
         }
-        System.out.println("Successfully cancelled all pending payments.");
+        System.out.println("Successfully cancelled all pending bookings.");
 
         //  PRINT OUT STATUS OF ALL BOOKINGS
         get_status_query = "Select * FROM Bookings WHERE status = \'Cancelled\'";
