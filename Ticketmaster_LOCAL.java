@@ -645,15 +645,16 @@ public class Ticketmaster{
         String get_status_query = "Select bid FROM Bookings WHERE status = \'Pending\'";
         //get list of bookings that have pending status
         try{
-             result = esql.executeQueryAndReturnResult(get_status_query);
-             System.out.println(Arrays.deepToString(result.toArray()));
+            System.out.println("\nThese are the bookings with a pending status\n");
+            result = esql.executeQueryAndReturnResult(get_status_query);
+            System.out.println(Arrays.deepToString(result.toArray()));
         }catch (SQLException e){
             System.out.println("We did an oopsie on our end. Please try again later.");
             return;
         }
 
         //then loop through the result and update those entries with the same bid
-        //also turn all showseats related to that bid to null to free them up
+        //also turn all showseats related to that bid to null to free them
         for(int i = 0; i < result.size(); ++i){
             //parse bid string to int
             bid = Integer.parseInt(result.get(i).get(0));
@@ -665,7 +666,7 @@ public class Ticketmaster{
                 esql.executeUpdate(remove_showseats_bid);
             }catch (SQLException e){
                 System.out.println("Error updating Booking entry with bid " + bid + ". Please try again later.");
-                return;s
+                return;
             }
         }
         System.out.println("Successfully cancelled all pending bookings.");
