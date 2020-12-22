@@ -1,1 +1,2 @@
-# CS166-Project-Phase-3
+# TicketMaster
+This Database project uses JDBC and Postgres to simulate a Ticketmaster.
